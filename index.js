@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits, REST, Routes, ActivityType } = require('discord.js');
 require('dotenv').config();
 const StartServer = require('./commands/startServer.js');
+const CheckServerStatus = require('./commands/CheckStatus.js');
 
 const { CLIENT_ID: clientId, GUILD_IDS: guildIds, TOKEN: token } = process.env;
 
@@ -16,7 +17,7 @@ client.once('ready', () => {
   client.user.presence.set({ status: 'ONLINE', activities: [{ type: ActivityType.Watching, name:  '🔴 Server OFF' }] });
 });
 
-const internalCommands = [StartServer];
+const internalCommands = [StartServer, CheckServerStatus];
 // internalCommands.forEach(command => {
 //   client.commands.set(command.data.name, command);
 // });

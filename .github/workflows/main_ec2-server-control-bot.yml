@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'production'
+      name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -51,6 +51,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'ec2-server-control-bot'
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_20fd6be844574d579d530abddc660194 }}
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_38484ABD0C5A47B6BDFA5F76F2926AD4 }}
           package: .

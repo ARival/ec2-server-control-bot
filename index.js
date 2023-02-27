@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, REST, Routes, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
 require('dotenv').config();
 const StartServer = require('./commands/startServer.js');
 const CheckServerStatus = require('./commands/CheckStatus.js');
@@ -13,33 +13,24 @@ console.log(guildIds);
 
 client.once('ready', () => {
   console.log('ready!');
-  // '🟢 Server ON🔴'
-  client.user.presence.set({ status: 'ONLINE', activities: [{ type: ActivityType.Watching, name:  '🔴 Server OFF' }] });
 });
 
-const internalCommands = [StartServer, CheckServerStatus];
-// internalCommands.forEach(command => {
-//   client.commands.set(command.data.name, command);
-// });
+client.commands = [StartServer, CheckServerStatus];
 
 // Construct and prepare an instance of the REST module
 const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
   try {
-    console.log(`Started refreshing ${internalCommands.length} application (/) commands.`);
+    console.log(`Started refreshing ${client.commands.length} application (/) commands.`);
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const Promises = guildIds.split(',').map(async guildId => await rest.put(
       Routes.applicationGuildCommands(clientId, guildId),
-      { body: internalCommands.map(internalCommand => internalCommand.data.toJSON()) },
+      { body: client.commands.map(internalCommand => internalCommand.data.toJSON()) },
     ));
 
     await Promise.all(Promises);
-    // const data = await rest.put(
-    //   Routes.applicationGuildCommands(clientId, guildId),
-    //   { body: internalCommands.map(internalCommand => internalCommand.data.toJSON()) },
-    // );
     console.log('Successfully reloaded all application (/) commands.');
 
   }
@@ -52,8 +43,9 @@ const rest = new REST({ version: '10' }).setToken(token);
 client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
   console.log('guild = ' + interaction.guild.id);
+  interaction.client = client;
 
-  const command = internalCommands.find(cmd => cmd.data.name === interaction.commandName);
+  const command = client.commands.find(cmd => cmd.data.name === interaction.commandName);
   if (!command) {
     console.log('No matching command found for interaction: ' + interaction.commandName);
     return;
